@@ -27,6 +27,7 @@ public class protocol {
     private int CurrentCommand = -1;
     private String disponibilidad = "";
     int portNumber = 6666;
+    String host =  "localhost"; //CAMBIAR SOLO USADO PARA TESTIN'!!!!!!!!!!!!!!
 
     private String options_message = "\nEscoja una acción:\n" + "1- Mostrar videos disponibles\n" + "2- Reproducir Video\n" + "3- Salir de la App\n"+
             "4- Detener reproduccion actual";
@@ -76,19 +77,23 @@ public class protocol {
             }
             else if (theInput.equals("2")) { // Reproducir Video
 
-
                 FFmpegFrameGrabber grabber = new FFmpegFrameGrabber("src/main/java/Servidor/media/video4.mp4");
                 // Open video video file
                 grabber.start ();
                 // Read frame by frame till the end of the video file (indicated by `null` frame)
                 Frame frame;
+
+                ///SOCKETS PARA MANDAR DATA
+                Socket DSocket = new Socket(host, 4446);
+                BufferedOutputStream ou = new BufferedOutputStream(DSocket.getOutputStream());
+                DataOutputStream output = new DataOutputStream(DSocket.getOutputStream());
+
                 while ((frame = grabber.grab()) != null) {
 
                     // frame se pueden convertir a bufferedimage
                     Java2DFrameConverter bimConverter = new Java2DFrameConverter();
                     BufferedImage img = bimConverter.convert(frame);
-                    BufferedImage frame_byte = (BufferedImage)img.getScaledInstance(
-                            img.getWidth(), img.getHeight(), java.awt.Image.SCALE_DEFAULT);
+                    BufferedImage frame_byte = (BufferedImage)img.getScaledInstance( img.getWidth(), img.getHeight(), java.awt.Image.SCALE_DEFAULT);
                     img.flush();
                     //la buffered image a bytearrayoutputstream
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -97,6 +102,9 @@ public class protocol {
                     //imageIO se puede pasar a bytearray
                     String encodedString = Base64.getEncoder().encodeToString(outputStream.toByteArray());
 
+                    //MANDAR DATAGRAMAS
+                    output.writeUTF(encodedString);
+
                 }
                 // Close the video file
                 grabber.release();
@@ -104,6 +112,10 @@ public class protocol {
                 System.out.println("Escriba nombre de video a reproducir:");
                 //String video2play = scanner_play_video.readLine();
                 // Abrir archivo y todo el tema para transmitirlo
+
+
+                ou.close();
+                DSocket.close();
             }
 
             else if (theInput.equals("3")) { // Salir de la App
@@ -123,4 +135,5 @@ public class protocol {
         }
         return theOutput;
     }
+
 }
