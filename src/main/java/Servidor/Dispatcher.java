@@ -1,7 +1,5 @@
 package Servidor;
 import java.io.*;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
-import org.bytedeco.javacv.Frame;
 
 public class Dispatcher {
     public static void main(String[] args) throws Exception {
