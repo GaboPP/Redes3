@@ -1,5 +1,6 @@
 package Servidor;
 ;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.net.*;
 import java.io.*;
@@ -8,9 +9,9 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Hashtable;
 
-import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.*;
 import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
+import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.*;
 
 import javax.imageio.ImageIO;
@@ -76,34 +77,51 @@ public class protocol {
                 state = sentcommands;
             }
             else if (theInput.equals("2")) { // Reproducir Video
+                //Canvas para mostrar el video
+                CanvasFrame canvas = new CanvasFrame("VideoCanvas");
+                //setearlo para cerrar canvas
+                canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 
-                FFmpegFrameGrabber grabber = new FFmpegFrameGrabber("src/main/java/Servidor/media/video4.mp4");
-                // Open video video file
+                FrameGrabber grabber = new OpenCVFrameGrabber ("src/main/java/Servidor/media/video4.mp4");
+
+                // Abriendo el vidio
                 grabber.start ();
-                // Read frame by frame till the end of the video file (indicated by `null` frame)
+                IplImage imagen;
                 Frame frame;
-
-                ///SOCKETS PARA MANDAR DATA
-                Socket DSocket = new Socket(host, 4446);
-                BufferedOutputStream ou = new BufferedOutputStream(DSocket.getOutputStream());
-                DataOutputStream output = new DataOutputStream(DSocket.getOutputStream());
-
                 while ((frame = grabber.grab()) != null) {
 
                     // frame se pueden convertir a bufferedimage
                     Java2DFrameConverter bimConverter = new Java2DFrameConverter();
                     BufferedImage img = bimConverter.convert(frame);
-                    BufferedImage frame_byte = (BufferedImage)img.getScaledInstance( img.getWidth(), img.getHeight(), java.awt.Image.SCALE_DEFAULT);
+                    BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D bGr = bimage.createGraphics();
+                    bGr.drawImage(img, 0, 0, null);
+                    bGr.dispose();
+
                     img.flush();
                     //la buffered image a bytearrayoutputstream
                     ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                     // eso se mete en un imageIO
-                    ImageIO.write(frame_byte, "png", outputStream);
+                    ImageIO.write(bimage, "png", outputStream);
                     //imageIO se puede pasar a bytearray
                     String encodedString = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+                    System.out.println (encodedString.length ());
 
-                    //MANDAR DATAGRAMAS
-                    output.writeUTF(encodedString);
+                    // MANDAR DATAGRAMAS
+                    // output.writeUTF(encodedString);
+
+                    byte[] decode = Base64.getDecoder( ).decode(encodedString);
+                    ByteArrayInputStream inputStream = new ByteArrayInputStream(decode);
+                    BufferedImage Bimage = ImageIO.read (inputStream);
+                    Frame frame2 = bimConverter.convert(Bimage);
+
+                    // Set canvas size as per dimentions of video frame.
+                    // canvas.setCanvasSize(grabber.getImageWidth(), grabber.getImageHeight());
+                    if (frame2 != null) {
+                        //Show video frame in canvas
+                        canvas.showImage(frame2);
+                    }
+
 
                 }
                 // Close the video file
@@ -114,8 +132,8 @@ public class protocol {
                 // Abrir archivo y todo el tema para transmitirlo
 
 
-                ou.close();
-                DSocket.close();
+                //ou.close();
+                //DSocket.close();
             }
 
             else if (theInput.equals("3")) { // Salir de la App
