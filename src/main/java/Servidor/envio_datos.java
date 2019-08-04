@@ -130,7 +130,7 @@ public class envio_datos extends Thread{
                 if(message != null){
                     if(message.contains("play")){
                         String movie = message.split(" ")[1];
-                        out.println("streaming");
+                        out.println("streaming " + movie);
                         boolean flag1 = true ;
                         while(flag1){
                             out.println("streaming");

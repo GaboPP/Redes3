@@ -38,11 +38,11 @@ public class receive_mult implements Runnable{
         while(flag){
             message = queue.poll();
             if(message != null){
-                String[] partes = message.split(" ");
-                String filename = partes[1];
-                if(partes[0].equals("streaming")){
+                if(message.contains("streaming")){
+                    String[] partes = message.split(" ");
+                    String filename = partes[1];
                     try{
-                        Socket socket_mult = new Socket(host,port);
+                        Socket socket_mult = new Socket(host, port);
                         BufferedReader in = new BufferedReader(new InputStreamReader(socket_mult.getInputStream()));
 
                         String video_enc;

@@ -191,17 +191,20 @@ public class multiserver {
             String mesg;
             String trans_port;
             trans_port = in.readLine(); //puerto de transmision
+            System.out.println(trans_port);
 
             BlockingQueue<String> queue_mult = new LinkedBlockingQueue<String>();
 
             int transport = Integer.parseInt(trans_port);
 
-            Thread receive_movie = new Thread(new receive_mult(queue_mult, transport, direccion)); 
+            Thread receive_movie = new Thread(new receive_mult(queue_mult, transport, direccion));
+            receive_movie.start(); 
 
             while((mesg = in.readLine()) != null){
                 System.out.println("Mensaje desde servidor: " + mesg);
                 try{
                    queue.put(mesg);
+                   queue_mult.put(mesg);
                 }
                 catch(InterruptedException e){
                     System.out.println(e);
