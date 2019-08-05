@@ -77,6 +77,10 @@ public class envio_datos extends Thread{
                 if((frame = grabber.grab()) == null){
                     flag = false;
                 }
+                canvas.showImage(frame);
+                //if(frame != null){
+                    
+                //}
                 // frame se pueden convertir a bufferedimage
                 Java2DFrameConverter bimConverter = new Java2DFrameConverter();
                 BufferedImage img = bimConverter.convert(frame);
@@ -92,6 +96,7 @@ public class envio_datos extends Thread{
                 ImageIO.write(bimage, "png", outputStream);
                 //imageIO se puede pasar a bytearray
                 String encodedString = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+                System.out.println(encodedString);
 
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
                 out.println(encodedString);
