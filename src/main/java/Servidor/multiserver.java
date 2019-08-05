@@ -96,7 +96,7 @@ public class multiserver {
 
                         //System.out.println("working on =" + System.getProperty("user.dir"));
 
-                        File folder = new File("./media");
+                        File folder = new File("src/main/java/Servidor/media");
                         File[] listOfFiles = folder.listFiles();
 
                         for(int i = 0; i < listOfFiles.length;i++){

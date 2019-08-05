@@ -47,6 +47,7 @@ public class receive_mult implements Runnable{
 
                         String video_enc;
                         CanvasFrame canvas = new CanvasFrame("VideoCanvas");
+                        canvas.setSize(640, 480);
                         canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
                         Java2DFrameConverter bimConverter = new Java2DFrameConverter();
                         while((video_enc = in.readLine()) != null){

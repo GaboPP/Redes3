@@ -16,7 +16,7 @@ import org.bytedeco.javacv.*;
 import org.bytedeco.javacv.Frame;
 import org.bytedeco.opencv.opencv_core.IplImage;
 import org.json.*;
-import org.bytedeco.javacv.FFmpegFrameGrabber;
+
 
 import javax.imageio.ImageIO;
 
@@ -57,6 +57,7 @@ public class envio_datos extends Thread{
 
     public void video_send(String Name, Socket socket, BlockingQueue<String> queue){
         CanvasFrame canvas = new CanvasFrame("VideoCanvas");
+        canvas.setSize(640, 480);
         //setearlo para cerrar canvas
         canvas.setDefaultCloseOperation(javax.swing.JFrame.EXIT_ON_CLOSE);
 
